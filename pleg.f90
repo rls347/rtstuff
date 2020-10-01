@@ -38,7 +38,7 @@ C
       IF (M .EQ. 0) THEN
         CM1 = 1.
         DM1 = 1.
-      ELSE
+      ELSE  !We're only dealing with m=0 here I think, so these are irrelevent for now...
         CM2 = -SQRT((2.*M-1.)/(2.*M))*CM1
         DM2 = -SQRT((2.*M+1.)/(2.*M))*DM1
       END IF
@@ -56,9 +56,9 @@ C----------------------------------------------------------------------C
           YPLEG(M+1,I) = CM2*(1-MU**2)**(M/2.)
           YPLEG(M+2,I) = DM2*MU*(1-MU**2)**(M/2.)
         END IF
-        DO 10,IL=1,NEXP-2 
+        DO 10,IL=1,NEXP-2   !Fills array from IL+2 (so 3, since 1 and 2 are done), last IL=NEXP-2 so YPLEG(NEXP) so L0,N-1
           L = IL-1
-          IF (IL .LT. M+1) THEN
+          IF (IL .LT. M+1) THEN   !the integral here is L = M,N so if M!=0, start at M
             YPLEG(IL,I) = 0.
             GO TO 10
           ELSE
@@ -70,6 +70,16 @@ C----------------------------------------------------------------------C
             LM1 = (L+M+1)*(L-M+1)
             YPLEG(IL+2,I) = ((2*L+3)*MU*YPLEG(IL+1,I)-SQRT(LM1)*        
      $            YPLEG(IL,I))/SQRT(LM2)
+            !Since M=0...
+            !Lm2 = (L-2)*(L+2)
+            !LM1 = (L+1)*(L-1)
+            !YPLEG(IL+2,I) = 1/(sqrt(LM2) * ( (2*L+3) * MU * Y(IL+1,I) -sqrt(LM1)*Y(IL,I))
+            !if L=IL-1... IL = L+1   also, 2*L + 3 = 2(L+1)+1 = 2*IL+1
+            !YPLEG(IL+2,I) = 1/(sqrt(LM2) * ( (2*IL+1) * MU * Y(IL+1,I) -sqrt(LM1)*Y(IL,I))
+            !L-M ! / L+m ! **.5
+            !but if m is 0...  this term is 1??
+            !when IL=1, filling YPLEG(IL+2), Y(3) ... L=0 so filling N=2
+
           END IF
   10    CONTINUE
   20  CONTINUE

@@ -16,7 +16,7 @@ def phasefunc(mu,n,g):
     phases = np.zeros_like(mu)
     chi = hgcoef(n,g)
     for l in range(n):
-        phases= phases + chi[l]*P(l,mu)*Phase1(mu,g)
+        phases= phases + chi[l]*P(l,mu)#*Phase1(mu,g)
     return phases
 
 mpl.rcParams['lines.linewidth'] = 2
@@ -29,7 +29,7 @@ def P(n,x):
         return x
     elif n>1:
         return (1./n)* ((2*(n-1)+1)*x*P(n-1,x) - (n-1)*P(n-2,x))
- 
+    
 
 angles = np.arange(181)  #radians
 mu = np.cos(angles*np.pi/180.)
@@ -43,15 +43,18 @@ p15 = phasefunc(mu,15,.8)
 p23 = phasefunc(mu,23,.8)
 p31 = phasefunc(mu,31,.8)
 
-plt.plot(mu,p7,label='n=7')
-plt.plot(mu,p15,label='n=15')
-plt.plot(mu,p23,label='n=23')
-plt.plot(mu,p31,label='n=31')
-#plt.plot(mu,Phase1(mu,g),label='P')
+plt.plot(angles,p7,label='n=7')
+plt.plot(angles,p15,label='n=15')
+plt.plot(angles,p23,label='n=23')
+plt.plot(angles,p31,label='n=31')
+#plt.plot(angles,Phase1(mu,g),label='P')
 plt.yscale('log')
 plt.ylim(.001,100)
+plt.title('Phase Functions')
+plt.xlabel('Scattering Angle')
 plt.legend()
-plt.savefig('phasefunction1.png')
+plt.tight_layout()
+plt.savefig('phasefunction.png')
 plt.close()
 
 
