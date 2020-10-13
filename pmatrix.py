@@ -93,7 +93,21 @@ print(' ')
 print('P- phase matrix')
 print(negphasematrix)
 
+#rmatrix = (1+delta(0,m)) * (omega/4) * M**(-1m) * P- *C
+#we still are doing only m = 0, so delta = 1, the M part is just M
+#M is diagonal with mus, C is diagonal with weights
 
+#const = omega/2.
+#what is omega? single scattering albedo... ? 
 
+M = np.diag(quad[:8])
+C = np.diag(weights[:8])
+
+print('r matrix')
+rmatrix = np.matrix(M)*np.matrix(negphasematrix)*np.matrix(C)
+print(rmatrix)
+
+print(M)
+print(C)
 
 
