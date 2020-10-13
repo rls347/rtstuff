@@ -73,8 +73,10 @@ print('negative pleg')
 print(plegneg)
 print(' ')
 #This is what Graeme has written as 'solar phase vector' so this is just for each angle wrt the sun
-print('Positive Phase', phasefunc(quadpos,32,g))
-print('Negative Phase', phasefunc(quadneg,32,g))
+possolarP = phasefunc(quadpos,32,g)
+negsolarP = phasefunc(quadneg,32,g)
+print('Positive Solar Phase Vector ', possolarP)
+print('Negative Solar Phase Vector ', negsolarP)
 print(' ')
 
 posphasematrix = np.zeros((nquad,nquad))
@@ -98,16 +100,43 @@ print(negphasematrix)
 #M is diagonal with mus, C is diagonal with weights
 
 #const = omega/2.
-#what is omega? single scattering albedo... ? 
+#what is omega? single scattering albedo... ? needs to be 1 to get right r matrix
 
-M = np.diag(quad[:8])
-C = np.diag(weights[:8])
+mm = 1./(quad[8:])
+cc = weights[8:]
+
+M = np.matrix(np.diag(mm[::-1]))
+C = np.matrix(np.diag(cc[::-1]))
 
 print('r matrix')
-rmatrix = np.matrix(M)*np.matrix(negphasematrix)*np.matrix(C)
+rmatrix = .5*M*np.matrix(negphasematrix)*C
 print(rmatrix)
 
-print(M)
-print(C)
+# print(M)
+# print(C)
+#
+# print(quad)
+# print(weights)
+
+print('')
+print('t matrix')
+tmatrix = M- .5*M*np.matrix(posphasematrix)*C
+print(tmatrix)
+
+#plus/minus versus minus/plus in Graeme's notes. 
+#F/4pi e(-tau/mu) don't know what F should be but as 1 it works out I think
+#Yes - Graeme has Ftop = 1.0
+#in his solution tau = 1. not sure why optical depth 1 makes any sense here. 
+#mu=cos(0)=1 mu is mu(dot) here. sun angle. 
+
+const = np.exp(-1.)/(4.*np.pi)
+
+sourcepos = const * M * np.matrix(np.diag(negsolarP)) #- (1-omega0)*Beta*M*U
+sourceneg = const * M * np.matrix(np.diag(possolarP))
+
+print('source pos')
+print(sourcepos)
+print('source neg')
+print(sourceneg)
 
 
