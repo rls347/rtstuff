@@ -44,7 +44,7 @@ mpl.rcParams['font.size'] = 14
 #np.set_printoptions(linewidth=os.get_terminal_size().columns)
 np.set_printoptions(linewidth=200)
 
-g=.84
+g=.85
 solar = 0.9 #cos of solar zenith angle
 
 nquad=8
@@ -61,10 +61,12 @@ chi = hgcoef(32,g)
 
 pleg = np.zeros((32,8))
 plegneg = np.zeros((32,8))
+plegsolar=np.zeros((32,1))
 
 for N in range(32):
     pleg[N,:] = P(N,quadpos)
     plegneg[N,:] = P(N,quadneg)
+    plegsolar[N,0] = P(N,solar)
 
 print('positive pleg')
 print(pleg)
@@ -72,11 +74,22 @@ print(' ')
 print('negative pleg')
 print(plegneg)
 print(' ')
-#This is what Graeme has written as 'solar phase vector' so this is just for each angle wrt the sun
-possolarP = phasefunc(quadpos,32,g)
-negsolarP = phasefunc(quadneg,32,g)
-print('Positive Solar Phase Vector ', possolarP)
-print('Negative Solar Phase Vector ', negsolarP)
+print('solar pleg')
+print(plegsolar)
+print(' ')
+
+possun = np.zeros((nquad,1))
+negsun = np.zeros((nquad,1))
+
+for i in range(8):
+    for j in range(1):
+        possun[i,j] = scatterphase(pleg,plegsolar,i,j,32,g)
+        negsun[i,j] = scatterphase(plegneg,plegsolar,i,j,32,g)
+
+print('Positive Solar Phase Vector')
+print(possun)
+print('Negative Solar Phase Vector')
+print(negsun)
 print(' ')
 
 posphasematrix = np.zeros((nquad,nquad))
@@ -87,7 +100,7 @@ negphasematrix = np.zeros((nquad,nquad))
 for i in range(8):
     for j in range(8):
         posphasematrix[i,j] = scatterphase(pleg,pleg,i,j,32,g)
-        negphasematrix[i,j] = scatterphase(pleg,plegneg,i,j,32,g)
+        negphasematrix[i,j] = scatterphase(plegneg,pleg,i,j,32,g)
 
 print('P+ phase matrix')
 print(posphasematrix)
@@ -131,12 +144,21 @@ print(tmatrix)
 
 const = np.exp(-1.)/(4.*np.pi)
 
-sourcepos = const * M * np.matrix(np.diag(negsolarP)) #- (1-omega0)*Beta*M*U
-sourceneg = const * M * np.matrix(np.diag(possolarP))
+sourcepos = const * M * np.matrix(negsun) #- (1-omega0)*Beta*M*U
+sourceneg = const * M * np.matrix(possun)
 
 print('source pos')
 print(sourcepos)
 print('source neg')
 print(sourceneg)
+print(' ')
+
+
+
+
+
+
+
+
 
 
